@@ -37,8 +37,8 @@
         <h2>Recommended</h2>
 
         <div class="recommended">
-          <div class="card">
-            <div class="card-title">Carrots</div>
+          <div class="card" v-for="(food) in inventries">
+            <div class="card-title">{{food.name}}</div>
             <div class="card-body">
               <i class="icofont-10x icofont-carrot"></i>
               <form>
@@ -47,97 +47,32 @@
                     <label>Type:</label>
                   </div>
                   <div class="cell">
-                    <em>Vegetable</em>
+                    <em>{{food.type}}</em>
                   </div>
                 </div>
                 <div class="row">
                   <div class="cell">
                     <label>Price:</label>
                   </div>
-                  <div class="cell">$4.82</div>
+                  <div class="cell">${{food.price}}</div>
                 </div>
                 <div class="row">
                   <div class="cell">
                     <label>Quantity:</label>
                   </div>
                   <div class="cell">
-                    <input type="number" v-model.number="inventory.carrots" />
+                    <input type="number" v-model.number="food.count" />
                   </div>
                 </div>
               </form>
             </div>
             <div class="card-footer">
-              <button @click="addToCart('carrots')" class="btn btn-light">
+              <button
+                @click="addToCart(food.name,food.price,food.count)"
+                class="btn btn-light"
+              >
                 Add to cart
               </button>
-            </div>
-          </div>
-
-          <div class="card">
-            <div class="card-title">Pineapples</div>
-            <div class="card-body">
-              <i class="icofont-10x icofont-pineapple"></i>
-              <form>
-                <div class="row">
-                  <div class="cell">
-                    <label>Type:</label>
-                  </div>
-                  <div class="cell">
-                    <em>Fruit</em>
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="cell">
-                    <label>Price:</label>
-                  </div>
-                  <div class="cell">$1.62</div>
-                </div>
-                <div class="row">
-                  <div class="cell">
-                    <label>Quantity:</label>
-                  </div>
-                  <div class="cell">
-                    <input type="number" v-model="inventory.pineapples" />
-                  </div>
-                </div>
-              </form>
-            </div>
-            <div class="card-footer">
-              <button class="btn btn-light">Add to cart</button>
-            </div>
-          </div>
-
-          <div class="card">
-            <div class="card-title">Cherries</div>
-            <div class="card-body">
-              <i class="icofont-10x icofont-cherry"></i>
-              <form>
-                <div class="row">
-                  <div class="cell">
-                    <label>Type:</label>
-                  </div>
-                  <div class="cell">
-                    <em>Fruit</em>
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="cell">
-                    <label>Price:</label>
-                  </div>
-                  <div class="cell">$1.04</div>
-                </div>
-                <div class="row">
-                  <div class="cell">
-                    <label>Quantity:</label>
-                  </div>
-                  <div class="cell">
-                    <input type="number" v-model="inventory.cherries" />
-                  </div>
-                </div>
-              </form>
-            </div>
-            <div class="card-footer">
-              <button class="btn btn-light">Add to cart</button>
             </div>
           </div>
         </div>
@@ -152,22 +87,46 @@
         data() {
           return {
             isShowSidebar: false,
+
+            inventries: [
+              {
+                name: "carrots",
+                count: 0,
+                price: 1.25,
+                type: "Vegetable",
+              },
+              {
+                name: "pineapples",
+                count: 0,
+                price: 2.25,
+                type: "Fruit",
+              },
+              {
+                name: "Cherries",
+                count: 0,
+                price: 1.75,
+                type: "Fruit",
+              },
+            ],
             inventory: {
               carrots: 0,
               pineapples: 0,
               cherries: 0,
             },
-            cart: {
-              carrots: 0,
-              pineapples: 0,
-              cherries: 0,
-            },
+            cart: {},
           };
         },
         methods: {
-          addToCart(type) {
-            this.cart[type] += this.inventory[type];
-            // console.log(Object.entries(this.cart));
+          addToCart(type, price, count) {
+            if (!this.cart?.[type]) {
+              this.cart[type] = {};
+              this.cart[type].name = type;
+              this.cart[type].price = price;
+              this.cart[type].count = count;
+            } else {
+              this.cart[type].count += count;
+            }
+            console.log(this.cart, type);
           },
           toggleSidebar() {
             this.isShowSidebar = !this.isShowSidebar;
@@ -191,7 +150,7 @@
           <div class="cart-body">
             <table class="cart-table">
               <thead>
-                <tr>
+                <tr >
                   <th><span class="sr-only">Product Image</span></th>
                   <th>Product</th>
                   <th>Price</th>
@@ -201,11 +160,11 @@
                 </tr>
               </thead>
               <tbody>
-                <tr>
+                <tr v-for='food in cart'>
                   <td><i class="icofont-carrot icofont-3x"></i></td>
-                  <td>Carrot</td>
-                  <td>$1.00</td>
-                  <td class="center">1</td>
+                  <td>{{food.name}}</td>
+                  <td>\${{food.price}}</td>
+                  <td class="center">{{food.count}}</td>
                   <td>$1.00</td>
                   <td class="center">
                     <button class="btn btn-light cart-remove">
